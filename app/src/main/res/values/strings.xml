@@ -1,0 +1,18 @@
+<resources>
+    <string name="app_name">SpotifyCloneDemo1</string>
+    <string name="playlist_title">Universe Playlist</string>
+    <string name="back_button_clicked">Back button clicked</string>
+    <string name="back_button_content_description">Back Button</string>
+    <string name="bottom_bar_item_home">Home</string>
+    <string name="bottom_bar_item_search">Search</string>
+    <string name="bottom_bar_item_library">Library</string>
+    <string name="bottom_bar_item_clicked">Item clicked</string>
+    <string name="pause_button_content_description">Pause Button</string>
+    <string name="play_button_content_description">Play Button</string>
+    <string name="album_cover_content_description">Album cover for %s</string>
+    <string name="options_button_clicked">Options button clicked</string>
+    <string name="options_button_content_description">Options Button</string>
+    <string name="audio_settings_button_clicked">Audio settings button clicked</string>
+    <string name="audio_settings_button_content_description">Audio settings button</string>
+    <string name="playback_bar_clicked">Playback Bar Clicked</string>
+</resources>
