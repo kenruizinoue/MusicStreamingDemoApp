@@ -11,29 +11,29 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
+import com.kenruizinoue.musicstreamingdemoapp.data.MockDataProvider
 import com.kenruizinoue.musicstreamingdemoapp.ui.theme.LabelSelectorBarHeight
-import com.kenruizinoue.musicstreamingdemoapp.ui.theme.LargeMargin
+import com.kenruizinoue.musicstreamingdemoapp.ui.theme.MediumLargeDp
 
 @Composable
-fun LabelSelector(options: List<String> = listOf()) {
-    val selectedLabel = rememberSaveable { mutableStateOf(options.firstOrNull() ?: "") }
+fun LabelSelectorBar(labelItems: List<String> = listOf()) {
+    val selectedLabel = rememberSaveable { mutableStateOf(labelItems.firstOrNull() ?: "") }
     LazyRow(
         verticalAlignment = Alignment.CenterVertically,
         modifier = Modifier.height(LabelSelectorBarHeight)
     ) {
-        item { Spacer(modifier = Modifier.width(LargeMargin)) }
-        items(options) { label ->
-            Label(text = label, labelSelected = label == selectedLabel.value) {
+        item { Spacer(modifier = Modifier.width(MediumLargeDp)) }
+        items(labelItems) { label ->
+            Label(text = label, selected = label == selectedLabel.value) {
                 selectedLabel.value = label
             }
         }
-        item { Spacer(modifier = Modifier.width(LargeMargin)) }
+        item { Spacer(modifier = Modifier.width(MediumLargeDp)) }
     }
 }
 
 @Preview
 @Composable
-fun PreviewLabelSelector() {
-    val options = listOf("All", "Pop", "Rock", "Jazz", "Hip Hop", "Classical")
-    LabelSelector(options = options)
+fun LabelSelectorPreview() {
+    LabelSelectorBar(labelItems = MockDataProvider.labelItems)
 }

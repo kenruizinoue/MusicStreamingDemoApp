@@ -20,10 +20,14 @@ class MainActivity : ComponentActivity() {
             MusicStreamingDemoAppTheme {
                 Surface(modifier = Modifier.fillMaxSize()) {
                     PlayListScreen(
-                        trackList = viewModel.trackList,
+                        labelItems = viewModel.labelItems,
+                        trackItems = viewModel.trackItems,
+                        bottomBarItems = viewModel.bottomBarItems,
                         trackStateFlow = viewModel.trackState,
-                        progressFlow = viewModel.progressFlow,
-                        playPauseButtonClicked = viewModel::togglePlaybackState,
+                        playbackProgressFlow = viewModel.progressFlow,
+                        onPreviousClicked = viewModel::selectPreviousTrack,
+                        onPlayPauseClicked = viewModel::togglePlaybackState,
+                        onNextClicked = viewModel::selectNextTrack,
                         selectTrack = viewModel::selectTrack
                     )
                 }

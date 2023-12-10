@@ -3,9 +3,10 @@ package com.kenruizinoue.musicstreamingdemoapp
 import android.os.SystemClock
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.kenruizinoue.musicstreamingdemoapp.data.MockTrackListProvider
+import com.kenruizinoue.musicstreamingdemoapp.data.BottomBarItemData
+import com.kenruizinoue.musicstreamingdemoapp.data.MockDataProvider
 import com.kenruizinoue.musicstreamingdemoapp.data.PlaybackState
-import com.kenruizinoue.musicstreamingdemoapp.data.Track
+import com.kenruizinoue.musicstreamingdemoapp.data.TrackItemData
 import com.kenruizinoue.musicstreamingdemoapp.data.TrackState
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
@@ -19,7 +20,10 @@ class MainViewModel : ViewModel() {
     private var elapsedTimeJob: Job? = null
     private var pausedTime: Long = 0
 
-    val trackList: List<Track> = MockTrackListProvider.trackList // Update the data source as needed
+    // Update the data sources as needed
+    val labelItems: List<String> = MockDataProvider.labelItems
+    val trackItems: List<TrackItemData> = MockDataProvider.trackItems
+    val bottomBarItems: List<BottomBarItemData> = MockDataProvider.bottomBarItems
     val trackState: StateFlow<TrackState> = _trackState.asStateFlow()
     val progressFlow: StateFlow<Float> = _trackState.map { trackState ->
         calculateProgress(trackState)
@@ -27,32 +31,40 @@ class MainViewModel : ViewModel() {
 
     init {
         // Select initial track
-        selectTrack(MockTrackListProvider.trackList[0], PlaybackState.PAUSED)
+        selectTrack(MockDataProvider.trackItems[0], PlaybackState.PAUSED)
     }
 
     private fun calculateProgress(trackState: TrackState): Float {
         if (trackState.track.trackDuration > 0) {
             val progress = trackState.elapsedTime.toFloat() / trackState.track.trackDuration.toFloat()
-            if (progress >= 1f) {
-                // Track finished, select next track
-                selectNextTrack(trackState)
-            }
+            if (progress >= 1f) selectNextTrack() // Track finished, select next track
             return progress.coerceIn(0f, 1f) // Make sure progress is between 0 and 1
         }
         return 0f
     }
 
-    private fun selectNextTrack(trackState: TrackState) {
-        MockTrackListProvider.getNextTrackById(trackState.track.id)?.let {
+    fun selectPreviousTrack() {
+        MockDataProvider.getPreviousTrackById(_trackState.value.track.id)?.let {
             selectTrack(it)
         }
     }
 
-    fun selectTrack(track: Track, playbackState: PlaybackState = PlaybackState.PLAYING) {
-        _trackState.value = TrackState(track, playbackState)
-        resetElapsedTime()
-        if (playbackState == PlaybackState.PLAYING) {
-            startElapsedTimeCalculation()
+    fun selectNextTrack() {
+        MockDataProvider.getNextTrackById(_trackState.value.track.id)?.let {
+            selectTrack(it)
+        }
+    }
+
+    fun selectTrack(track: TrackItemData, playbackState: PlaybackState = PlaybackState.PLAYING) {
+        // If the track is already selected, toggle playback state
+        if (track.id == _trackState.value.track.id) {
+            togglePlaybackState()
+        } else {
+            _trackState.value = TrackState(track, playbackState)
+            resetElapsedTime()
+            if (playbackState == PlaybackState.PLAYING) {
+                startElapsedTimeCalculation()
+            }
         }
     }
 

@@ -31,50 +31,47 @@ import androidx.compose.ui.tooling.preview.Preview
 import coil.compose.rememberImagePainter
 import com.kenruizinoue.musicstreamingdemoapp.R
 import com.kenruizinoue.musicstreamingdemoapp.data.PlaybackState
-import com.kenruizinoue.musicstreamingdemoapp.data.Track
+import com.kenruizinoue.musicstreamingdemoapp.data.TrackItemData
 import com.kenruizinoue.musicstreamingdemoapp.data.TrackState
-import com.kenruizinoue.musicstreamingdemoapp.ui.theme.DarkBackgroundColor
-import com.kenruizinoue.musicstreamingdemoapp.ui.theme.ElectricPurple
-import com.kenruizinoue.musicstreamingdemoapp.ui.theme.LargeMargin
-import com.kenruizinoue.musicstreamingdemoapp.ui.theme.MediumMargin
-import com.kenruizinoue.musicstreamingdemoapp.ui.theme.SmallMargin
-import com.kenruizinoue.musicstreamingdemoapp.ui.theme.TeackItemHeight
-import com.kenruizinoue.musicstreamingdemoapp.ui.theme.TitleBlue
+import com.kenruizinoue.musicstreamingdemoapp.ui.theme.LargeDp
+import com.kenruizinoue.musicstreamingdemoapp.ui.theme.MediumDp
+import com.kenruizinoue.musicstreamingdemoapp.ui.theme.MediumLargeDp
+import com.kenruizinoue.musicstreamingdemoapp.ui.theme.TrackItemHeight
+import com.kenruizinoue.musicstreamingdemoapp.ui.theme.PrimaryBlack
+import com.kenruizinoue.musicstreamingdemoapp.ui.theme.PrimaryWhite
+import com.kenruizinoue.musicstreamingdemoapp.ui.theme.TertiaryColor
 import com.kenruizinoue.musicstreamingdemoapp.ui.theme.TrackItemAlbumCoverSize
 import com.kenruizinoue.musicstreamingdemoapp.ui.theme.TrackItemSecondaryTextStyle
 import com.kenruizinoue.musicstreamingdemoapp.ui.theme.TrackItemPrimaryTextStyle
-import com.kenruizinoue.musicstreamingdemoapp.ui.theme.White
 import com.kenruizinoue.musicstreamingdemoapp.utils.formatDuration
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flowOf
 
 @Composable
 fun TrackItem(
-    track: Track,
+    track: TrackItemData,
     trackStateFlow: Flow<TrackState> = flowOf(TrackState()),
     playbackProgressFlow: Flow<Float> = flowOf(0f),
-    selectTrack: (Track) -> Unit = {}
+    selectTrack: (TrackItemData) -> Unit = {}
 ) {
     val trackState = trackStateFlow.collectAsState(initial = TrackState()).value
     val playbackProgress = playbackProgressFlow.collectAsState(initial = 0f).value
-
     val imagePainter = rememberImagePainter(
         data = track.coverDrawableId,
         builder = {
-            fallback(R.drawable.falback_album_cover)
+            fallback(R.drawable.fallback_album_cover)
         }
     )
-
     Row(
         modifier = Modifier
-            .height(TeackItemHeight)
+            .height(TrackItemHeight)
             .fillMaxWidth()
             .clickable {
                 selectTrack(track)
             },
         verticalAlignment = Alignment.CenterVertically
     ) {
-        Spacer(modifier = Modifier.width(LargeMargin))
+        Spacer(modifier = Modifier.width(MediumLargeDp))
         Box(
             modifier = Modifier
                 .size(TrackItemAlbumCoverSize)
@@ -93,31 +90,31 @@ fun TrackItem(
                 Box(
                     modifier = Modifier
                         .fillMaxSize()
-                        .background(DarkBackgroundColor.copy(alpha = 0.5f))
+                        .background(PrimaryBlack.copy(alpha = 0.5f))
                 ) {
                     CircularProgressIndicator(
                         modifier = Modifier
-                            .fillMaxSize().padding(MediumMargin),
+                            .fillMaxSize()
+                            .padding(MediumDp),
                         progress = playbackProgress,
-                        color = ElectricPurple,
-                        trackColor = White
+                        color = TertiaryColor,
+                        trackColor = PrimaryWhite
                     )
                 }
-                // TODO ken add content description
-                val iconId =
+                val (iconId, contentDescriptionId) =
                     if (trackState.playbackState == PlaybackState.PLAYING) {
-                        R.drawable.ic_pause
+                        R.drawable.ic_pause to R.string.pause_button_content_description
                     } else {
-                        R.drawable.ic_play
+                        R.drawable.ic_play to R.string.play_button_content_description
                     }
                 Icon(
                     painter = painterResource(id = iconId),
-                    tint = White,
-                    contentDescription = ""
+                    tint = PrimaryWhite,
+                    contentDescription = stringResource(id = contentDescriptionId),
                 )
             }
         }
-        Spacer(modifier = Modifier.width(LargeMargin))
+        Spacer(modifier = Modifier.width(LargeDp))
         Column(
             modifier = Modifier
                 .weight(1f) // This makes the column take up all available space
@@ -125,11 +122,10 @@ fun TrackItem(
             Text(
                 style = TrackItemPrimaryTextStyle,
                 text = track.title,
-                color = if (trackState.track.id == track.id) ElectricPurple else TitleBlue,
+                color = if (trackState.track.id == track.id) TertiaryColor else PrimaryBlack,
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis
             )
-            Spacer(modifier = Modifier.height(SmallMargin))
             Text(
                 style = TrackItemSecondaryTextStyle,
                 text = track.artist,
@@ -138,7 +134,7 @@ fun TrackItem(
             )
         }
         Text(
-            modifier = Modifier.padding(end = LargeMargin),
+            modifier = Modifier.padding(end = LargeDp),
             style = TrackItemSecondaryTextStyle,
             text = formatDuration(track.trackDuration)
         )
@@ -147,13 +143,13 @@ fun TrackItem(
 
 @Preview
 @Composable
-fun TrackItemPreview() {
+fun TrackItemUiPreview() {
     Column(
         modifier = Modifier.fillMaxHeight(),
         verticalArrangement = Arrangement.Center,
     ) {
         TrackItem(
-            track = Track(
+            track = TrackItemData(
                 id = 1,
                 title = "Midnight Echoes",
                 artist = "Luna Harmonics",
@@ -162,7 +158,7 @@ fun TrackItemPreview() {
             playbackProgressFlow = flowOf(0.5f),
             trackStateFlow = flowOf(
                 TrackState(
-                    track = Track(
+                    track = TrackItemData(
                         id = 1,
                         title = "Midnight Echoes",
                         artist = "Luna Harmonics",

@@ -1,6 +1,6 @@
 package com.kenruizinoue.musicstreamingdemoapp.data
 
-data class Track(
+data class TrackItemData(
     val id: Int = -1,
     val title: String = "",
     val artist: String = "",
